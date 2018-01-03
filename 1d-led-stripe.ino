@@ -8,7 +8,9 @@
 
 // Which pin on the Arduino is connected to the NeoPixels?
 // On a Trinket or Gemma we suggest changing this to 1
-#define PIN            D2
+#define LED_DATA_PIN   D2
+#define BUTTON_1_PIN   D6
+#define BUTTON_2_PIN   D7
 
 // How many NeoPixels are attached to the Arduino?
 #define NUMPIXELS      48
@@ -16,7 +18,7 @@
 // When we setup the NeoPixel library, we tell it how many pixels, and which pin to use to send signals.
 // Note that for older NeoPixel strips you might need to change the third parameter--see the strandtest
 // example for more information on possible values.
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, LED_DATA_PIN, NEO_GRB + NEO_KHZ800);
 
 int delayval = 100; // delay for half a second
 
@@ -28,6 +30,13 @@ void setup() {
   // End of trinket special code
 
   pixels.begin(); // This initializes the NeoPixel library.
+
+  pinMode(BUTTON_1_PIN, INPUT_PULLUP);
+  pinMode(BUTTON_2_PIN, INPUT_PULLUP);
+
+  Serial.begin(9600);
+
+  while (!Serial); // wait for serial port to connect. Needed for native USB port only  
 }
 
 void clearLeds() {
@@ -37,11 +46,20 @@ void clearLeds() {
     int red = 0;
     int green = 0;
     int blue = 0;
-        
-    if(i < range || i >= (NUMPIXELS - range)) {
-      red   = 0;
+
+    int b1 = digitalRead(BUTTON_1_PIN);
+    int b2 = digitalRead(BUTTON_2_PIN);
+
+    // Player 1
+    if(i >= (NUMPIXELS - range)) {
+      red   = b1 ? 16 : 0;
       green = 0;
-      blue  = 16;
+      blue  = b1 ? 0 : 16;
+    }
+    else if(i < range) {
+      red   = b2 ? 16: 0;
+      green = 0;
+      blue  = b2 ? 0 :16;
     }
     
     pixels.setPixelColor(i, pixels.Color(red, green, blue));
@@ -70,7 +88,6 @@ void loop() {
     ledPos++;
   else
     ledPos--;
-
 
   if(ledPos == 0)
     direction = UP;
