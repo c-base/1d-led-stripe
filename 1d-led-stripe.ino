@@ -14,6 +14,7 @@
 
 // How many NeoPixels are attached to the Arduino?
 #define NUMPIXELS      48
+const int range = 6;
 
 enum direction {
   UP,
@@ -48,27 +49,17 @@ void setup() {
   while (!Serial); // wait for serial port to connect. Needed for native USB port only  
 }
 
-void clearLeds() {
-  const int range = 6;
-  
+void clearLeds() {    
   for(int i = 0; i < NUMPIXELS; ++i) {
     int red = 0;
     int green = 0;
-    int blue = 0;
-
-    int b1 = digitalRead(BUTTON_1_PIN);
-    int b2 = digitalRead(BUTTON_2_PIN);
+    int blue = 0;     
 
     // Player 1
-    if(i >= (NUMPIXELS - range)) {
-      red   = b1 ? 16 : 0;
+    if(i >= (NUMPIXELS - range) || (i < range)) {
+      red   = 0;
       green = 0;
-      blue  = b1 ? 0 : 16;
-    }
-    else if(i < range) {
-      red   = b2 ? 16: 0;
-      green = 0;
-      blue  = b2 ? 0 :16;
+      blue  = 16;
     }
     
     pixels.setPixelColor(i, pixels.Color(red, green, blue));
@@ -98,6 +89,20 @@ void die() {
   direction = direction == UP ? DOWN : UP;  
 }
 
+void checkButtons() {
+  int b1 = digitalRead(BUTTON_1_PIN);
+  int b2 = digitalRead(BUTTON_2_PIN);
+  
+  if(ledPos >= (NUMPIXELS - range)) { // Player 1
+    if(b1)
+      direction = DOWN;  
+  }
+  else if(ledPos < range) { // Player 2
+    if(b2)
+      direction = UP;  
+  }
+}
+
 void loop() {    
   for(int i = 0; i < ledCount; i++){
     clearLeds();
@@ -116,6 +121,8 @@ void loop() {
     die();
   
   if(ledPos == NUMPIXELS - 1)
-    die();
+    die();    
+
+  checkButtons();
 }
 
