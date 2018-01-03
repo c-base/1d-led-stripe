@@ -15,6 +15,15 @@
 // How many NeoPixels are attached to the Arduino?
 #define NUMPIXELS      48
 
+enum direction {
+  UP,
+  DOWN
+};
+
+static const int ledCount = NUMPIXELS;
+static int ledPos = NUMPIXELS / 2;
+static int direction = UP;
+
 // When we setup the NeoPixel library, we tell it how many pixels, and which pin to use to send signals.
 // Note that for older NeoPixel strips you might need to change the third parameter--see the strandtest
 // example for more information on possible values.
@@ -66,16 +75,30 @@ void clearLeds() {
   }
 }
 
-enum direction {
-  UP,
-  DOWN
-};
+void turnOffAllLeds() {
+  for(int i = 0; i < NUMPIXELS; i++)
+    pixels.setPixelColor(i, pixels.Color(0,0,0));
 
-void loop() {
-  const int ledCount = NUMPIXELS;
-  static int ledPos = 0;
-  static int direction = UP;
-  
+  pixels.show();
+}
+
+void die() {
+  turnOffAllLeds();
+
+  // Blink
+  for(int i = 0; i < 3; i++) {  
+    pixels.setPixelColor(ledPos, pixels.Color(255,0,0));
+    pixels.show();
+    delay(500);
+    turnOffAllLeds();
+    delay(500);
+  }
+
+  ledPos = NUMPIXELS / 2;
+  direction = direction == UP ? DOWN : UP;  
+}
+
+void loop() {    
   for(int i = 0; i < ledCount; i++){
     clearLeds();
     pixels.setPixelColor(ledPos, pixels.Color(0,150,0)); // Moderately bright green color.        
@@ -90,9 +113,9 @@ void loop() {
     ledPos--;
 
   if(ledPos == 0)
-    direction = UP;
+    die();
   
   if(ledPos == NUMPIXELS - 1)
-    direction = DOWN;
+    die();
 }
 
