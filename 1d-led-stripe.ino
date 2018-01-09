@@ -1,6 +1,7 @@
 #include "config.h"
 #include <ArduinoOTA.h>
 #include <Adafruit_NeoPixel.h>
+#include "1dpong.h"
 
 enum direction {
   UP,
