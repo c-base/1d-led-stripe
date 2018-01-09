@@ -9,9 +9,8 @@ const char* wifi_ota_name = <put OTA name here>
 const char* wifi_ota_password = <put OTA password here>
 
 // LED stripe:
-#define LED_DATA_PIN 4 // Data pin where LED stripe is connected on Node MCU
-#define NUM_LEDS 59    // Number of LEDs on the stripe
-#define BUTTON_1_PIN D6
-#define BUTTON_2_PIN D7
-#define RANGE 6
-
+#define LED_DATA_PIN D2 // Data pin where LED stripe is connected
+#define NUM_LEDS 49     // Number of LEDs on the stripe
+#define BUTTON_1_PIN D7 // Button of player 1
+#define BUTTON_2_PIN D6 // Button of Player 2
+#define RANGE 6         // Number of base LEDs per player
