@@ -1,5 +1,25 @@
 #include "1dpong.h"
 
+//-----------------------------------------------------
+// Ball
+//-----------------------------------------------------
+
+void Ball::hit(int speed) {
+  // TODO: change ball direction
+}
+
+void Ball::tick() {
+  // TODO: move the ball, based on the speed
+}
+
+int Ball::getPos() {
+  return pos_;
+}
+
+//-----------------------------------------------------
+// OneDimensionalPong
+//-----------------------------------------------------
+
 OneDimensionalPong::OneDimensionalPong() : pixels_(NUM_LEDS, LED_DATA_PIN, NEO_GRB + NEO_KHZ800) {
   
 }

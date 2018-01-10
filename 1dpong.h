@@ -4,6 +4,25 @@
 #include "config.h"
 #include <Adafruit_NeoPixel.h>
 
+//-----------------------------------------------------
+// Ball
+//-----------------------------------------------------
+
+class Ball {
+public:
+  void hit(int speed);
+  void tick();  
+  int getPos();
+
+private:
+  int pos_{NUM_LEDS / 2};
+  int speed_{2}; // pixels per second
+};
+
+//-----------------------------------------------------
+// OneDimensionalPong
+//-----------------------------------------------------
+
 class OneDimensionalPong {
 public:
   OneDimensionalPong();
