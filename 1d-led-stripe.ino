@@ -3,10 +3,7 @@
 #include <Adafruit_NeoPixel.h>
 #include "1dpong.h"
 
-enum direction {
-  UP,
-  DOWN
-};
+#define USE_OOP
 
 static const int ledCount = NUM_LEDS;
 static int ledPos = NUM_LEDS / 2;
@@ -64,18 +61,6 @@ void setupOta() {
   Serial.println("Ready");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
-}
-
-void setup() {
-  Serial.begin(115200);
-
-  setupOta();
-  pixels.begin(); // This initializes the NeoPixel library.
-
-  pinMode(BUTTON_1_PIN, INPUT_PULLUP);
-  pinMode(BUTTON_2_PIN, INPUT_PULLUP);
-
-  while (!Serial); // wait for serial port to connect. Needed for native USB port only
 }
 
 void clearLeds() {
@@ -142,6 +127,38 @@ void checkButtons() {
   }
 }
 
+#ifdef USE_OOP
+
+OneDimensionalPong _pongGame;
+
+void setup() {
+  Serial.begin(115200);
+  setupOta();
+  _pongGame.init();
+
+  while (!Serial); // wait for serial port to connect. Needed for native USB port only
+}
+
+void loop() {
+  ArduinoOTA.handle();
+  
+  _pongGame.tick();
+}
+
+#else // !USE_OOP
+
+void setup() {
+  Serial.begin(115200);
+
+  setupOta();
+  pixels.begin(); // This initializes the NeoPixel library.
+
+  pinMode(BUTTON_1_PIN, INPUT_PULLUP);
+  pinMode(BUTTON_2_PIN, INPUT_PULLUP);
+
+  while (!Serial); // wait for serial port to connect. Needed for native USB port only
+}
+
 void loop() {
   ArduinoOTA.handle();
 
@@ -166,4 +183,7 @@ void loop() {
 
   checkButtons();
 }
+
+#endif // !USE_OOP
+
 
