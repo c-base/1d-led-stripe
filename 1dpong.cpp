@@ -4,12 +4,30 @@
 // Ball
 //-----------------------------------------------------
 
+Ball::Ball() {
+  setPos(NUM_LEDS / 2);
+}
+
+void Ball::setPos(int pos) {
+  pos_ = pos;
+  speed_ = 100;
+}
+
 void Ball::hit(int speed) {
-  // TODO: change ball direction
+  Serial.println("Ball::hit");
+  
+  speed_ = speed;
 }
 
 void Ball::tick() {
-  // TODO: move the ball, based on the speed
+  delay(1000 / (1 + abs(speed_)));
+
+  int newPos = pos_ + (speed_ > 0 ? 1 : -1);
+
+  if (newPos < 0 || newPos == NUM_LEDS)
+    return;
+
+  pos_ = newPos;
 }
 
 int Ball::getPos() {
@@ -33,26 +51,18 @@ void OneDimensionalPong::init() {
 }
 
 void OneDimensionalPong::checkButtons() {
+  Serial.println("OneDimensionalPong::checkButtons");
+  
   int b1 = digitalRead(BUTTON_1_PIN);
   int b2 = digitalRead(BUTTON_2_PIN);
 
-  if (ledPos_ >= (NUM_LEDS - RANGE)) { // Player 1
-    if (b1) {
-      direction_ = Direction::Down;
-
-      int ledsInBase = NUM_LEDS - ledPos_;
-      int i = 1 + 10 * (NUM_LEDS - ledsInBase);
-      int speed = maxDelayVal - i;
-    }
+  if (ball_.getPos() >= (NUM_LEDS - RANGE)) { // Player 1
+    if (b1)
+      ball_.hit(-25);    
   }
-  else if (ledPos_ < RANGE) { // Player 2
-    if (b2) {
-      direction_ = Direction::Up;
-
-      int ledsInBase = ledPos_;
-      int i = 1 + 10 * (ledsInBase);
-      int speed = maxDelayVal - i;
-    }
+  else if (ball_.getPos() < RANGE) { // Player 2
+    if (b2)
+      ball_.hit(25);
   }
 }
 
@@ -94,26 +104,12 @@ void OneDimensionalPong::clearLeds() {
   }
 }
 
-void OneDimensionalPong::tick() {
-  for (int i = 0; i < ledCount_; i++) {
-    clearLeds();
-    pixels_.setPixelColor(ledPos_, pixels_.Color(0, 4, 0)); // Moderately bright green color.
-  }
-
+void OneDimensionalPong::tick() {    
+  clearLeds();
+  ball_.tick();
+  pixels_.setPixelColor(ball_.getPos(), pixels_.Color(0, 4, 0)); // Moderately bright green color.
   pixels_.show(); // This sends the updated pixel color to the hardware.
-  delay(delayval); // Delay for a period of time (in milliseconds).
-
-  if (direction_ == Direction::Up)
-    ledPos_++;
-  else
-    ledPos_--;
-
-  if (ledPos_ == 0)
-    die();
-
-  if (ledPos_ == NUM_LEDS - 1)
-    die();
-
+   
   checkButtons();
 }
 

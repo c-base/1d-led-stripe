@@ -10,13 +10,16 @@
 
 class Ball {
 public:
+  Ball();
+
+  void setPos(int pos);
   void hit(int speed);
   void tick();  
   int getPos();
 
 private:
   int pos_{NUM_LEDS / 2};
-  int speed_{2}; // pixels per second
+  int speed_{250}; // TODO: pixels per second
 };
 
 //-----------------------------------------------------
@@ -45,6 +48,7 @@ private:
   int ledPos_{NUM_LEDS / 2};
   Direction direction_{Direction::Up};
   Adafruit_NeoPixel pixels_;
+  Ball ball_;
 };
 
 #endif // !__1DPONG_H
