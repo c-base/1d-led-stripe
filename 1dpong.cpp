@@ -18,7 +18,7 @@ void OneDimensionalPong::checkButtons() {
 
   if (ledPos_ >= (NUM_LEDS - RANGE)) { // Player 1
     if (b1) {
-      direction_ = DOWN;
+      direction_ = Direction::Down;
 
       int ledsInBase = NUM_LEDS - ledPos_;
       int i = 1 + 10 * (NUM_LEDS - ledsInBase);
@@ -27,7 +27,7 @@ void OneDimensionalPong::checkButtons() {
   }
   else if (ledPos_ < RANGE) { // Player 2
     if (b2) {
-      direction_ = UP;
+      direction_ = Direction::Up;
 
       int ledsInBase = ledPos_;
       int i = 1 + 10 * (ledsInBase);
@@ -54,7 +54,7 @@ void OneDimensionalPong::die() {
   }
 
   ledPos_ = NUM_LEDS / 2;
-  direction_ = direction_ == UP ? DOWN : UP;
+  direction_ = direction_ == Direction::Up ? Direction::Down : Direction::Up;
 }
 
 void OneDimensionalPong::clearLeds() {
@@ -83,7 +83,7 @@ void OneDimensionalPong::tick() {
   pixels_.show(); // This sends the updated pixel color to the hardware.
   delay(delayval); // Delay for a period of time (in milliseconds).
 
-  if (direction_ == UP)
+  if (direction_ == Direction::Up)
     ledPos_++;
   else
     ledPos_--;
