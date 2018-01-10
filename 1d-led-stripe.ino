@@ -3,17 +3,6 @@
 #include <Adafruit_NeoPixel.h>
 #include "1dpong.h"
 
-#define USE_OOP
-
-static const int ledCount = NUM_LEDS;
-static int ledPos = NUM_LEDS / 2;
-static int direction = UP;
-
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUM_LEDS, LED_DATA_PIN, NEO_GRB + NEO_KHZ800);
-
-const int maxDelayVal = 100;
-int delayval = maxDelayVal; // pixel speed
-
 void setupOta() {
   Serial.println("Booting");
 
@@ -63,72 +52,6 @@ void setupOta() {
   Serial.println(WiFi.localIP());
 }
 
-void clearLeds() {
-  for (int i = 0; i < NUM_LEDS; ++i) {
-    int red = 0;
-    int green = 0;
-    int blue = 0;
-
-    // Player 1
-    if (i >= (NUM_LEDS - RANGE) || (i < RANGE)) {
-      red   = 0;
-      green = 0;
-      blue  = 2;
-    }
-
-    pixels.setPixelColor(i, pixels.Color(red, green, blue));
-  }
-}
-
-void turnOffAllLeds() {
-  for (int i = 0; i < NUM_LEDS; i++)
-    pixels.setPixelColor(i, pixels.Color(0, 0, 0));
-
-  pixels.show();
-}
-
-void die() {
-  turnOffAllLeds();
-
-  // Blink
-  for (int i = 0; i < 3; i++) {
-    pixels.setPixelColor(ledPos, pixels.Color(4, 0, 0));
-    pixels.show();
-    delay(500);
-    turnOffAllLeds();
-    delay(500);
-  }
-
-  ledPos = NUM_LEDS / 2;
-  direction = direction == UP ? DOWN : UP;
-}
-
-void checkButtons() {
-  int b1 = digitalRead(BUTTON_1_PIN);
-  int b2 = digitalRead(BUTTON_2_PIN);
-
-  if (ledPos >= (NUM_LEDS - RANGE)) { // Player 1
-    if (b1) {
-      direction = DOWN;
-
-      int ledsInBase = NUM_LEDS - ledPos;
-      int i = 1 + 10 * (NUM_LEDS - ledsInBase);
-      int speed = maxDelayVal - i;
-    }
-  }
-  else if (ledPos < RANGE) { // Player 2
-    if (b2) {
-      direction = UP;
-
-      int ledsInBase = ledPos;
-      int i = 1 + 10 * (ledsInBase);
-      int speed = maxDelayVal - i;
-    }
-  }
-}
-
-#ifdef USE_OOP
-
 OneDimensionalPong _pongGame;
 
 void setup() {
@@ -144,46 +67,4 @@ void loop() {
   
   _pongGame.tick();
 }
-
-#else // !USE_OOP
-
-void setup() {
-  Serial.begin(115200);
-
-  setupOta();
-  pixels.begin(); // This initializes the NeoPixel library.
-
-  pinMode(BUTTON_1_PIN, INPUT_PULLUP);
-  pinMode(BUTTON_2_PIN, INPUT_PULLUP);
-
-  while (!Serial); // wait for serial port to connect. Needed for native USB port only
-}
-
-void loop() {
-  ArduinoOTA.handle();
-
-  for (int i = 0; i < ledCount; i++) {
-    clearLeds();
-    pixels.setPixelColor(ledPos, pixels.Color(0, 4, 0)); // Moderately bright green color.
-  }
-
-  pixels.show(); // This sends the updated pixel color to the hardware.
-  delay(delayval); // Delay for a period of time (in milliseconds).
-
-  if (direction == UP)
-    ledPos++;
-  else
-    ledPos--;
-
-  if (ledPos == 0)
-    die();
-
-  if (ledPos == NUM_LEDS - 1)
-    die();
-
-  checkButtons();
-}
-
-#endif // !USE_OOP
-
 
