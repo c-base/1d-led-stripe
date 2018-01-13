@@ -23,6 +23,24 @@ private:
 };
 
 //-----------------------------------------------------
+// Player
+//-----------------------------------------------------
+
+class Player {
+public:
+  Player(int basePos);
+
+  void ballIsInBase(const Ball& ball);
+  void ballIsInOff();
+  int basePos();
+  int numBaseLeds();
+  
+private:
+  const int basePos_;
+  static const int numBaseLeds_{6};
+};
+
+//-----------------------------------------------------
 // OneDimensionalPong
 //-----------------------------------------------------
 
@@ -31,10 +49,10 @@ public:
   OneDimensionalPong();
   void init();  
   void checkButtons();
-  void turnOffAllLeds();
-  void clearLeds();
+  void turnOffAllLeds();  
   void die();  
   void tick();
+  void render();
 
 private:  
   enum class Direction {
@@ -49,6 +67,9 @@ private:
   Direction direction_{Direction::Up};
   Adafruit_NeoPixel pixels_;
   Ball ball_;
+  Player player1_;
+  Player player2_;
 };
 
 #endif // !__1DPONG_H
+

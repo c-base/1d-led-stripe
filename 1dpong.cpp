@@ -1,5 +1,7 @@
 #include "1dpong.h"
 
+#define USE_NEW_PLAYER
+
 //-----------------------------------------------------
 // Ball
 //-----------------------------------------------------
@@ -35,10 +37,35 @@ int Ball::getPos() {
 }
 
 //-----------------------------------------------------
+// Player
+//-----------------------------------------------------
+
+Player::Player(int basePos) : basePos_(basePos) {
+  
+}
+
+void Player::ballIsInBase(const Ball& ball) {
+  
+}
+
+void Player::ballIsInOff() {
+  
+}
+
+int Player::basePos() {
+  return basePos_;
+}
+
+int Player::numBaseLeds() {
+  return numBaseLeds_;
+}
+
+//-----------------------------------------------------
 // OneDimensionalPong
 //-----------------------------------------------------
 
-OneDimensionalPong::OneDimensionalPong() : pixels_(NUM_LEDS, LED_DATA_PIN, NEO_GRB + NEO_KHZ800) {
+OneDimensionalPong::OneDimensionalPong() : pixels_(NUM_LEDS, LED_DATA_PIN, NEO_GRB + NEO_KHZ800),
+    player1_(10), player2_(30) {
   
 }
 
@@ -87,29 +114,27 @@ void OneDimensionalPong::die() {
   direction_ = direction_ == Direction::Up ? Direction::Down : Direction::Up;
 }
 
-void OneDimensionalPong::clearLeds() {
-  for (int i = 0; i < NUM_LEDS; ++i) {
-    int red = 0;
-    int green = 0;
-    int blue = 0;
-
-    // Player 1
-    if (i >= (NUM_LEDS - RANGE) || (i < RANGE)) {
-      red   = 0;
-      green = 0;
-      blue  = 2;
-    }
-
-    pixels_.setPixelColor(i, pixels_.Color(red, green, blue));
-  }
-}
-
-void OneDimensionalPong::tick() {    
-  clearLeds();
-  ball_.tick();
-  pixels_.setPixelColor(ball_.getPos(), pixels_.Color(0, 4, 0)); // Moderately bright green color.
-  pixels_.show(); // This sends the updated pixel color to the hardware.
+void OneDimensionalPong::tick() {      
+  ball_.tick();  
    
   checkButtons();
+
+  render();
+}
+
+void OneDimensionalPong::render() {
+  pixels_.clear();  
+  
+  // players
+  for(int i = player1_.basePos(); i < player1_.basePos() + player1_.numBaseLeds(); i++)
+    pixels_.setPixelColor(i, pixels_.Color(0, 0, 4)); // Moderately bright blue color.
+
+  for(int i = player2_.basePos(); i < player2_.basePos() + player2_.numBaseLeds(); i++)
+    pixels_.setPixelColor(i, pixels_.Color(0, 0, 4)); // Moderately bright blue color.
+
+  // ball
+  pixels_.setPixelColor(ball_.getPos(), pixels_.Color(0, 4, 0)); // Moderately bright green color.
+   
+  pixels_.show(); // This sends the updated pixel color to the hardware.
 }
 
