@@ -23,7 +23,7 @@ void Ball::hit(int speed) {
 }
 
 void Ball::tick() {
-  delay(5000 / (1 + abs(speed_)));
+  delay(1000 / (1 + abs(speed_)));
 
   int newPos = pos_ + (speed_ > 0 ? 1 : -1);
 
@@ -59,16 +59,7 @@ Player::Player(int basePos, BaseStartingPoint baseStartingPoint) : basePos_(base
 }
 
 bool Player::ballIsInBase(const Ball& ball) {
-  if(baseStartingPoint_ == BaseStartingPoint::Left) {
-    if(ball.getPos() < basePos_ + numBaseLeds_)
-      return true;
-  }
-  else if(baseStartingPoint_ == BaseStartingPoint::Right) {
-    if(ball.getPos() > basePos_)
-      return true;
-  }
-
-  return false;
+  return ballPositionInBase(ball) != 0;
 }
 
 int Player::ballPositionInBase(const Ball& ball) const {
@@ -108,7 +99,7 @@ bool Player::ballIsOnLastPixel(const Ball& ball) const {
 //-----------------------------------------------------
 
 OneDimensionalPong::OneDimensionalPong() : pixels_(NUM_LEDS, LED_DATA_PIN, NEO_GRB + NEO_KHZ800),
-    player1_(10, BaseStartingPoint::Left), player2_(30, BaseStartingPoint::Right), 
+    player1_(0, BaseStartingPoint::Left), player2_(43, BaseStartingPoint::Right), 
     ball_(player1_.basePos(), player2_.basePos() + player2_.numBaseLeds()) {
   
 }
@@ -129,12 +120,12 @@ void OneDimensionalPong::checkButtons() {
 
   if (player1_.ballIsInBase(ball_)) {
     if (b1 && ball_.isMovingToLeft()) {
-      ball_.hit(10);
+      ball_.hit(10 * player1_.ballPositionInBase(ball_));
     }
   }
   else if (player2_.ballIsInBase(ball_)) {
     if (b2 && ball_.isMovingToRight()) {
-      ball_.hit(-10);
+      ball_.hit(-10 * player2_.ballPositionInBase(ball_));
     }
   }
 }
