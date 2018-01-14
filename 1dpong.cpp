@@ -1,7 +1,5 @@
 #include "1dpong.h"
 
-#define USE_NEW_PLAYER
-
 //-----------------------------------------------------
 // Ball
 //-----------------------------------------------------
@@ -17,8 +15,6 @@ void Ball::setPos(int pos) {
 }
 
 void Ball::hit(int speed) {
-  Serial.println("Ball::hit");
-  
   speed_ = speed;
 }
 
@@ -88,10 +84,7 @@ int Player::numBaseLeds() const {
 }
 
 bool Player::ballIsOnLastPixel(const Ball& ball) const {
-  if(ball.getPos() == basePos_)
-    return true;
-
-  return false;
+  return ball.getPos() == basePos_;
 }
 
 //-----------------------------------------------------
@@ -99,7 +92,7 @@ bool Player::ballIsOnLastPixel(const Ball& ball) const {
 //-----------------------------------------------------
 
 OneDimensionalPong::OneDimensionalPong() : pixels_(NUM_LEDS, LED_DATA_PIN, NEO_GRB + NEO_KHZ800),
-    player1_(0, BaseStartingPoint::Left), player2_(43, BaseStartingPoint::Right), 
+    player1_(0, BaseStartingPoint::Left), player2_(NUM_LEDS - RANGE, BaseStartingPoint::Right), 
     ball_(player1_.basePos(), player2_.basePos() + player2_.numBaseLeds()) {
   
 }
@@ -152,11 +145,6 @@ void OneDimensionalPong::die() {
 }
 
 void OneDimensionalPong::tick() {  
-  Serial.print("Ball position in base Player1: ");
-  Serial.println(player1_.ballPositionInBase(ball_));
-  Serial.print("Ball position in base Player2: ");
-  Serial.println(player2_.ballPositionInBase(ball_));
-  
   checkButtons();
   ball_.tick();
   render();  
