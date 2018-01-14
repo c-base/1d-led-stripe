@@ -42,6 +42,14 @@ void Ball::setBounds(int leftBound, int rightBound) {
   rightBound_ = rightBound;
 }
 
+bool Ball::isMovingToRight() const {
+  return speed_ > 0;
+}
+
+bool Ball::isMovingToLeft() const {
+  return speed_ < 0;
+}
+
 //-----------------------------------------------------
 // Player
 //-----------------------------------------------------
@@ -120,12 +128,12 @@ void OneDimensionalPong::checkButtons() {
   int b2 = digitalRead(BUTTON_2_PIN);
 
   if (player1_.ballIsInBase(ball_)) {
-    if (b1) {
+    if (b1 && ball_.isMovingToLeft()) {
       ball_.hit(10);
     }
   }
   else if (player2_.ballIsInBase(ball_)) {
-    if (b2) {
+    if (b2 && ball_.isMovingToRight()) {
       ball_.hit(-10);
     }
   }

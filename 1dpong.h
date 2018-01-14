@@ -17,6 +17,8 @@ public:
   void hit(int speed);
   void tick();  
   int getPos() const;
+  bool isMovingToRight() const;
+  bool isMovingToLeft() const;
 
 private:
   int pos_{NUM_LEDS / 2};
