@@ -10,33 +10,43 @@
 
 class Ball {
 public:
-  Ball();
+  Ball(int leftBound, int rightBound);
 
+  void setBounds(int leftBound, int rightBound);
   void setPos(int pos);
   void hit(int speed);
   void tick();  
-  int getPos();
+  int getPos() const;
 
 private:
   int pos_{NUM_LEDS / 2};
   int speed_{250}; // TODO: pixels per second
+  int leftBound_{0};
+  int rightBound_{0};
 };
 
 //-----------------------------------------------------
 // Player
 //-----------------------------------------------------
 
+enum class BaseStartingPoint {
+  Left,
+  Right
+};
+
 class Player {
 public:
-  Player(int basePos);
+  Player(int basePos, BaseStartingPoint startingPoint);
 
-  void ballIsInBase(const Ball& ball);
+  bool ballIsInBase(const Ball& ball);
   void ballIsInOff();
-  int basePos();
-  int numBaseLeds();
+  int basePos() const;
+  int numBaseLeds() const;
+  bool ballIsOnLastPixel(const Ball& ball);
   
 private:
   const int basePos_;
+  const BaseStartingPoint baseStartingPoint_;
   static const int numBaseLeds_{6};
 };
 
@@ -65,10 +75,10 @@ private:
   int delayval = maxDelayVal; // pixel speed
   int ledPos_{NUM_LEDS / 2};
   Direction direction_{Direction::Up};
-  Adafruit_NeoPixel pixels_;
-  Ball ball_;
+  Adafruit_NeoPixel pixels_;  
   Player player1_;
   Player player2_;
+  Ball ball_;
 };
 
 #endif // !__1DPONG_H
