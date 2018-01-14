@@ -42,7 +42,8 @@ public:
   void ballIsInOff();
   int basePos() const;
   int numBaseLeds() const;
-  bool ballIsOnLastPixel(const Ball& ball);
+  int ballPositionInBase(const Ball& ball) const;
+  bool ballIsOnLastPixel(const Ball& ball) const;
   
 private:
   const int basePos_;

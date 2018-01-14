@@ -23,7 +23,7 @@ void Ball::hit(int speed) {
 }
 
 void Ball::tick() {
-  delay(1000 / (1 + abs(speed_)));
+  delay(5000 / (1 + abs(speed_)));
 
   int newPos = pos_ + (speed_ > 0 ? 1 : -1);
 
@@ -63,6 +63,19 @@ bool Player::ballIsInBase(const Ball& ball) {
   return false;
 }
 
+int Player::ballPositionInBase(const Ball& ball) const {
+  if(baseStartingPoint_ == BaseStartingPoint::Left) {
+    if(ball.getPos() < basePos_ + numBaseLeds_)
+      return basePos_ + numBaseLeds_ - ball.getPos();      
+  }
+  else if(baseStartingPoint_ == BaseStartingPoint::Right) {
+    if(ball.getPos() >= basePos_)
+      return 1 + ball.getPos() - basePos_;
+  }
+
+  return 0;
+}
+
 void Player::ballIsInOff() {
   
 }
@@ -75,7 +88,7 @@ int Player::numBaseLeds() const {
   return numBaseLeds_;
 }
 
-bool Player::ballIsOnLastPixel(const Ball& ball) {
+bool Player::ballIsOnLastPixel(const Ball& ball) const {
   if(ball.getPos() == basePos_)
     return true;
 
@@ -107,12 +120,14 @@ void OneDimensionalPong::checkButtons() {
   int b2 = digitalRead(BUTTON_2_PIN);
 
   if (player1_.ballIsInBase(ball_)) {
-    if (b1)
+    if (b1) {
       ball_.hit(10);
+    }
   }
   else if (player2_.ballIsInBase(ball_)) {
-    if (b2)
+    if (b2) {
       ball_.hit(-10);
+    }
   }
 }
 
@@ -138,14 +153,14 @@ void OneDimensionalPong::die() {
 }
 
 void OneDimensionalPong::tick() {  
+  Serial.print("Ball position in base Player1: ");
+  Serial.println(player1_.ballPositionInBase(ball_));
+  Serial.print("Ball position in base Player2: ");
+  Serial.println(player2_.ballPositionInBase(ball_));
+  
   checkButtons();
   ball_.tick();
-  render();
-
-  Serial.print("Ball is in Base of Player 1:");
-  Serial.println(player1_.ballIsInBase(ball_));
-  Serial.print("Ball is in Base of Player 2:");
-  Serial.println(player2_.ballIsInBase(ball_));
+  render();  
 }
   
 void OneDimensionalPong::render() {
