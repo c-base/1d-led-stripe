@@ -56,9 +56,11 @@ public:
   const char* getName() const;
   void kill();
   void revive();
-  bool isDead();
+  bool isDead() const ;
+  int lifes() const;
     
 private:
+  int numLifes_{RANGE};
   bool isDead_{false};
   const int basePos_;
   const BaseStartingPoint baseStartingPoint_;

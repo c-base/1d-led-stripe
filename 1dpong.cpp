@@ -99,10 +99,11 @@ void Player::kill() {
   Serial.print(name_.c_str());
   Serial.println("' is dying");
 
+  numLifes_--;
   isDead_ = true;
 }
 
-bool Player::isDead() {
+bool Player::isDead() const {
   return isDead_;
 }
 
@@ -112,6 +113,10 @@ void Player::revive() {
 
 const char* Player::getName() const {
   return name_.c_str();
+}
+
+int Player::lifes() const {
+  return numLifes_;
 }
 
 //-----------------------------------------------------
@@ -194,14 +199,26 @@ void OneDimensionalPong::tick() {
 }
   
 void OneDimensionalPong::render() {
-  pixels_.clear();  
+  pixels_.clear();
   
   // players
-  for(int i = player1_.basePos(); i < player1_.basePos() + player1_.numBaseLeds(); i++)
-    pixels_.setPixelColor(i, pixels_.Color(0, 0, 4)); // Moderately bright blue color.
+  for(int i = 0; i < player1_.numBaseLeds(); i++) {
+    int pos = i + player1_.basePos();
 
-  for(int i = player2_.basePos(); i < player2_.basePos() + player2_.numBaseLeds(); i++)
-    pixels_.setPixelColor(i, pixels_.Color(0, 0, 4)); // Moderately bright blue color.
+    if(pos < player1_.lifes())
+      pixels_.setPixelColor(pos, pixels_.Color(0, 0, 4));      
+    else
+      pixels_.setPixelColor(pos, pixels_.Color(4, 0, 4));
+  }
+
+  for(int i = 0; i < player2_.numBaseLeds(); i++) {
+    int pos = i + player2_.basePos();
+    
+    if(pos - player2_.basePos() >= player2_.numBaseLeds() - player2_.lifes())
+      pixels_.setPixelColor(pos, pixels_.Color(0, 0, 4));
+    else
+      pixels_.setPixelColor(pos, pixels_.Color(4, 0, 4));      
+  }
 
   // ball
   pixels_.setPixelColor(ball_.getPos(), pixels_.Color(0, 4, 0)); // Moderately bright green color.
