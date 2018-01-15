@@ -119,6 +119,10 @@ int Player::lifes() const {
   return numLifes_;
 }
 
+void Player::resetLifes() {
+  numLifes_ = numBaseLeds_;
+}
+
 //-----------------------------------------------------
 // OneDimensionalPong
 //-----------------------------------------------------
@@ -232,6 +236,11 @@ void OneDimensionalPong::onBallHitBounds(void* pInstance, int pos) {
   if(pThis->player1_.ballIsInBase(pThis->ball_))
     pThis->player1_.kill();
   else if(pThis->player2_.ballIsInBase(pThis->ball_))
-    pThis->player2_.kill();  
+    pThis->player2_.kill();
+
+  if(pThis->player1_.lifes() == 0 || pThis->player2_.lifes() == 0) {
+    pThis->player1_.resetLifes();
+    pThis->player2_.resetLifes();
+  }
 }
 

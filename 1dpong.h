@@ -56,15 +56,17 @@ public:
   const char* getName() const;
   void kill();
   void revive();
+  void resetLifes();
   bool isDead() const ;
   int lifes() const;
-    
+      
 private:
-  int numLifes_{RANGE};
+  static const int numBaseLeds_{RANGE};
+  int numLifes_{numBaseLeds_};
   bool isDead_{false};
   const int basePos_;
   const BaseStartingPoint baseStartingPoint_;
-  static const int numBaseLeds_{6};
+  
   std::string name_{"anonymous"};  
 };
 
