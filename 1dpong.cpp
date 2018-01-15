@@ -4,7 +4,10 @@
 // Ball
 //-----------------------------------------------------
 
-Ball::Ball(int leftBound, int rightBound) {
+Ball::Ball(int leftBound, int rightBound, void* pCallbackInstance, 
+    OnBallHitBoundCallback pOnBallHitBoundCallback) : pCallbackInstance_(pCallbackInstance),
+    pOnBallHitBoundCallback_(pOnBallHitBoundCallback) {
+      
   setPos(NUM_LEDS / 2);
   setBounds(leftBound, rightBound);  
 }
@@ -23,8 +26,12 @@ void Ball::tick() {
 
   int newPos = pos_ + (speed_ > 0 ? 1 : -1);
 
-  if (newPos < leftBound_ || newPos == rightBound_)
+  if (newPos < leftBound_ || newPos == rightBound_) {
+   if(pOnBallHitBoundCallback_)
+     pOnBallHitBoundCallback_(pCallbackInstance_, pos_); 
+  
     return;
+  }
 
   pos_ = newPos;
 }
@@ -54,6 +61,10 @@ Player::Player(int basePos, BaseStartingPoint baseStartingPoint) : basePos_(base
   
 }
 
+void Player::setName(const char* pName) {
+  name_ = pName;
+}
+
 bool Player::ballIsInBase(const Ball& ball) {
   return ballPositionInBase(ball) != 0;
 }
@@ -71,10 +82,6 @@ int Player::ballPositionInBase(const Ball& ball) const {
   return 0;
 }
 
-void Player::ballIsInOff() {
-  
-}
-
 int Player::basePos() const {
   return basePos_;
 }
@@ -87,14 +94,36 @@ bool Player::ballIsOnLastPixel(const Ball& ball) const {
   return ball.getPos() == basePos_;
 }
 
+void Player::kill() {
+  Serial.print("Player '");
+  Serial.print(name_.c_str());
+  Serial.println("' is dying");
+
+  isDead_ = true;
+}
+
+bool Player::isDead() {
+  return isDead_;
+}
+
+void Player::revive() {
+  isDead_ = false;
+}
+
+const char* Player::getName() const {
+  return name_.c_str();
+}
+
 //-----------------------------------------------------
 // OneDimensionalPong
 //-----------------------------------------------------
 
 OneDimensionalPong::OneDimensionalPong() : pixels_(NUM_LEDS, LED_DATA_PIN, NEO_GRB + NEO_KHZ800),
     player1_(0, BaseStartingPoint::Left), player2_(NUM_LEDS - RANGE, BaseStartingPoint::Right), 
-    ball_(player1_.basePos(), player2_.basePos() + player2_.numBaseLeds()) {
-  
+    ball_(player1_.basePos(), player2_.basePos() + player2_.numBaseLeds(), this, onBallHitBounds) {
+
+  player1_.setName("Player 1");
+  player2_.setName("Player 2");  
 }
 
 void OneDimensionalPong::init() {
@@ -106,26 +135,23 @@ void OneDimensionalPong::init() {
 }
 
 void OneDimensionalPong::checkButtons() {
-  Serial.println("OneDimensionalPong::checkButtons");
-  
   int b1 = digitalRead(BUTTON_1_PIN);
   int b2 = digitalRead(BUTTON_2_PIN);
 
   if (player1_.ballIsInBase(ball_)) {
-    if (b1 && ball_.isMovingToLeft()) {
-      ball_.hit(10 * player1_.ballPositionInBase(ball_));
-    }
+    if (b1 && ball_.isMovingToLeft())
+      ball_.hit(10 * player1_.ballPositionInBase(ball_));          
   }
   else if (player2_.ballIsInBase(ball_)) {
-    if (b2 && ball_.isMovingToRight()) {
-      ball_.hit(-10 * player2_.ballPositionInBase(ball_));
-    }
+    if (b2 && ball_.isMovingToRight())
+      ball_.hit(-10 * player2_.ballPositionInBase(ball_));    
   }
 }
 
 void OneDimensionalPong::turnOffAllLeds() {
   pixels_.clear();
   pixels_.show();
+  delay(50);
 }
 
 void OneDimensionalPong::die() {
@@ -133,20 +159,37 @@ void OneDimensionalPong::die() {
 
   // Blink
   for (int i = 0; i < 3; i++) {
-    pixels_.setPixelColor(ledPos_, pixels_.Color(4, 0, 0));
+    pixels_.setPixelColor(ball_.getPos(), pixels_.Color(4, 0, 0));
     pixels_.show();
     delay(500);
     turnOffAllLeds();
     delay(500);
   }
+  
+  ball_.setPos(NUM_LEDS / 2);
 
-  ledPos_ = NUM_LEDS / 2;
-  direction_ = direction_ == Direction::Up ? Direction::Down : Direction::Up;
+  if(player1_.isDead()) {    
+    player1_.revive();  
+    ball_.hit(10);
+  }
+
+  if(player2_.isDead()) {    
+    player2_.revive();  
+    ball_.hit(-10);
+  }  
 }
 
 void OneDimensionalPong::tick() {  
   checkButtons();
   ball_.tick();
+
+  if(player1_.isDead()) {
+    die();
+  }
+  else if(player2_.isDead()) {
+    die();
+  }
+  
   render();  
 }
   
@@ -164,5 +207,14 @@ void OneDimensionalPong::render() {
   pixels_.setPixelColor(ball_.getPos(), pixels_.Color(0, 4, 0)); // Moderately bright green color.
    
   pixels_.show(); // This sends the updated pixel color to the hardware.
+}
+
+void OneDimensionalPong::onBallHitBounds(void* pInstance, int pos) {
+  OneDimensionalPong* pThis = static_cast<OneDimensionalPong*>(pInstance);  
+
+  if(pThis->player1_.ballIsInBase(pThis->ball_))
+    pThis->player1_.kill();
+  else if(pThis->player2_.ballIsInBase(pThis->ball_))
+    pThis->player2_.kill();  
 }
 
