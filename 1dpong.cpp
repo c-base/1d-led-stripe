@@ -144,17 +144,22 @@ void OneDimensionalPong::init() {
 }
 
 void OneDimensionalPong::checkButtons() {
+  static int lastB1 = 0;
+  static int lastB2 = 0;
   int b1 = digitalRead(BUTTON_1_PIN);
   int b2 = digitalRead(BUTTON_2_PIN);
 
-  if (player1_.ballIsInBase(ball_)) {
+  if (player1_.ballIsInBase(ball_) && !lastB1) {
     if (b1 && ball_.isMovingToLeft())
       ball_.hit(10 * player1_.ballPositionInBase(ball_));          
   }
-  else if (player2_.ballIsInBase(ball_)) {
+  else if (player2_.ballIsInBase(ball_) && !lastB2) {
     if (b2 && ball_.isMovingToRight())
       ball_.hit(-10 * player2_.ballPositionInBase(ball_));    
   }
+
+  lastB1 = b1;
+  lastB2 = b2;
 }
 
 void OneDimensionalPong::turnOffAllLeds() {
