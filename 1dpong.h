@@ -22,7 +22,7 @@ public:
       void* pCallbackInstance = nullptr, OnBallHitBoundCallback pOnBallHitBoundCallback = nullptr);
 
   void setBounds(int leftBound, int rightBound);
-  void setPos(int pos, Direction direction = Direction::Right);
+  void setPos(int pos);
   void hit(int speed);
   void tick();
   int getPos() const;

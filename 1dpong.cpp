@@ -12,10 +12,9 @@ Ball::Ball(int leftBound, int rightBound, void* pCallbackInstance,
   setBounds(leftBound, rightBound);
 }
 
-void Ball::setPos(int pos, Direction direction) {
+void Ball::setPos(int pos) {
   pos_ = pos;
-  speed_ = 10;
-  direction_ = direction_ == Direction::Right ? Direction::Left : Direction::Right;
+  speed_ = 10;  
 }
 
 void Ball::hit(int speed) {
