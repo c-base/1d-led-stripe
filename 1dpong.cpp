@@ -9,22 +9,24 @@ Ball::Ball(int leftBound, int rightBound, void* pCallbackInstance,
     pOnBallHitBoundCallback_(pOnBallHitBoundCallback) {
       
   setPos(NUM_LEDS / 2);
-  setBounds(leftBound, rightBound);  
+  setBounds(leftBound, rightBound);
 }
 
-void Ball::setPos(int pos) {
+void Ball::setPos(int pos, Direction direction) {
   pos_ = pos;
   speed_ = 10;
+  direction_ = direction_ == Direction::Right ? Direction::Left : Direction::Right;
 }
 
 void Ball::hit(int speed) {
+  direction_ = direction_ == Direction::Right ? Direction::Left : Direction::Right;  
   speed_ = speed;
 }
 
 void Ball::tick() {
   delay(1000 / (1 + abs(speed_)));
 
-  int newPos = pos_ + (speed_ > 0 ? 1 : -1);
+  int newPos = pos_ + (direction_ == Direction::Right ? 1 : -1);
 
   if (newPos < leftBound_ || newPos == rightBound_) {
    if(pOnBallHitBoundCallback_)
@@ -46,11 +48,11 @@ void Ball::setBounds(int leftBound, int rightBound) {
 }
 
 bool Ball::isMovingToRight() const {
-  return speed_ > 0;
+  return direction_ == Direction::Right;
 }
 
 bool Ball::isMovingToLeft() const {
-  return speed_ < 0;
+  return direction_ == Direction::Left;
 }
 
 //-----------------------------------------------------
@@ -155,7 +157,7 @@ void OneDimensionalPong::checkButtons() {
   }
   else if (player2_.ballIsInBase(ball_) && !lastB2) {
     if (b2 && ball_.isMovingToRight())
-      ball_.hit(-10 * player2_.ballPositionInBase(ball_));    
+      ball_.hit(10 * player2_.ballPositionInBase(ball_));    
   }
 
   lastB1 = b1;
@@ -189,7 +191,7 @@ void OneDimensionalPong::die() {
 
   if(player2_.isDead()) {    
     player2_.revive();  
-    ball_.hit(-10);
+    ball_.hit(10);
   }  
 }
 

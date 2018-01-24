@@ -11,24 +11,30 @@
 
 typedef void (*OnBallHitBoundCallback)(void* pInstnace, int pos);
 
+enum class Direction {
+  Left,
+  Right
+};
+
 class Ball {
 public:
   Ball(int leftBound, int rightBound, 
       void* pCallbackInstance = nullptr, OnBallHitBoundCallback pOnBallHitBoundCallback = nullptr);
 
   void setBounds(int leftBound, int rightBound);
-  void setPos(int pos);
+  void setPos(int pos, Direction direction = Direction::Right);
   void hit(int speed);
-  void tick();  
+  void tick();
   int getPos() const;
   bool isMovingToRight() const;
-  bool isMovingToLeft() const;  
+  bool isMovingToLeft() const;
 
 private:
   int pos_{NUM_LEDS / 2};
   int speed_{250}; // TODO: pixels per second
   int leftBound_{0};
   int rightBound_{0};
+  Direction direction_{Direction::Right};
 
   void* pCallbackInstance_{nullptr};
   OnBallHitBoundCallback pOnBallHitBoundCallback_{nullptr};
