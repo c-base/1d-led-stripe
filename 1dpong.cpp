@@ -14,12 +14,12 @@ Ball::Ball(int leftBound, int rightBound, void* pCallbackInstance,
 
 void Ball::setPos(int pos) {
   pos_ = pos;
-  speed_ = 10;  
+  speed_ = 20;  
 }
 
 void Ball::hit(int speed) {
   direction_ = direction_ == Direction::Right ? Direction::Left : Direction::Right;  
-  speed_ = speed;
+  speed_ += speed;
 }
 
 void Ball::tick() {
@@ -152,11 +152,11 @@ void OneDimensionalPong::checkButtons() {
 
   if (player1_.ballIsInBase(ball_) && !lastB1) {
     if (b1 && ball_.isMovingToLeft())
-      ball_.hit(10 * player1_.ballPositionInBase(ball_));          
+      ball_.hit(player1_.ballPositionInBase(ball_));          
   }
   else if (player2_.ballIsInBase(ball_) && !lastB2) {
     if (b2 && ball_.isMovingToRight())
-      ball_.hit(10 * player2_.ballPositionInBase(ball_));    
+      ball_.hit(player2_.ballPositionInBase(ball_));    
   }
 
   lastB1 = b1;
