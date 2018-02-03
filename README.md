@@ -11,4 +11,5 @@ Requirements:
   * Install the following libraries:
     * ArduinoOTA
     * Adafruit Neopixel
-    
+    * PubSubClient
+
