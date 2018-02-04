@@ -1,46 +1,33 @@
-#include <ESP8266WiFi.h>
 #include "config.h"
 #include "c-flo.h"
 
-const String prefix = "mainhall/espong";
-const String role = "button/one";
-
-auto participant = msgflo::Participant("mainhall/espong", role);
-
-WiFiClient wifiClient;
-PubSubClient mqttClient;
-msgflo::Engine* engine;
-msgflo::OutPort* buttonPort;
-msgflo::InPort* ledPort;
-
-void setupCflo() {    
-  participant.icon = "toggle-on";
-
-  mqttClient.setServer(mqttHost, mqttPort);
-  mqttClient.setClient(wifiClient);
-
-  String clientId = role;
-  clientId += WiFi.macAddress();
-  engine = msgflo::pubsub::createPubSubClientEngine(participant, &mqttClient, clientId.c_str(), NULL, NULL);
-  buttonPort = engine->addOutPort("button", "any", prefix + role + "/event");
-
-  ledPort = engine->addInPort("led", "boolean", prefix + role + "/led",
-    [](byte *data, int length) -> void {
-      const std::string in((char *)data, length);
-      const boolean on = (in == "1" || in == "true");     
-    });
-
-  buttonPort->send("true");
+Cflo::Cflo(String location, String name, String role) {  
+  prefix_ = location + "/" + name + "/";
+  role_ = role;  
 }
 
-void cFloTick() {
-  static int lastTickTime = millis();
+void Cflo::init() {  
+  msgflo::Participant participant = msgflo::Participant(prefix_, role_);
+  participant.icon = "lightbulb-o";
+  
+  mqttClient_.setServer(mqttHost, mqttPort);
+  mqttClient_.setClient(wifiClient_);  
+
+  String clientId = role_;
+  clientId += WiFi.macAddress();
+  
+  pEngine_ = msgflo::pubsub::createPubSubClientEngine(participant, &mqttClient_, clientId.c_str(), NULL, NULL);    
+  pButtonPort_ = pEngine_->addOutPort("button", "any", prefix_ + role_ + "/event"); 
+}
+
+void Cflo::tick() {   
+  static int lastTickTime = millis();  
 
   if(millis() - lastTickTime > 1000) {
-    buttonPort->send("true");
+    pButtonPort_->send("true");
     lastTickTime = millis();
   }
   
-  engine->loop();
+  pEngine_->loop();
 }
 
