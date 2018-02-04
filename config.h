@@ -11,6 +11,10 @@ static const char* wifi_password = <put wifi password here>
 static const char* wifi_ota_name = <put OTA name here>
 static const char* wifi_ota_password = <put OTA password here>
 
+// c-flo
+static const char* mqttHost = "c-beam.cbrp3.c-base.org";
+static const int mqttPort = 1883;
+
 #define LED_DATA_PIN D2 // Data pin where LED stripe is connected on Node MCU
 
 // LED Stripe:
