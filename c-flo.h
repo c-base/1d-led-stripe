@@ -5,9 +5,9 @@
 #include <Msgflo.h>
 
 // Workaround: The output buffer is only 128 byte and therefore too small for c-flo auto discovery messages.
-//             It has to be increased in the PubSubClient.h to at least 512 bytes until it gets fixed by the developers:
+//             It has to be increased in the PubSubClient.h to at least 1024 bytes until it gets fixed by the developers:
 
-#if MQTT_MAX_PACKET_SIZE < 512
+#if MQTT_MAX_PACKET_SIZE < 1024
   #error "Incrase MQTT_MAX_PACKET_SIZE in PubSubClient.h before compiling"
 #endif
 

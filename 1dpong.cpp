@@ -41,6 +41,10 @@ int Ball::getPos() const {
   return pos_;
 }
 
+int Ball::getSpeed() const {
+  return speed_;
+}
+
 void Ball::setBounds(int leftBound, int rightBound) {
   leftBound_ = leftBound;
   rightBound_ = rightBound;
@@ -52,6 +56,10 @@ bool Ball::isMovingToRight() const {
 
 bool Ball::isMovingToLeft() const {
   return direction_ == Direction::Left;
+}
+
+Direction Ball::getDirection() const {
+  return direction_;
 }
 
 //-----------------------------------------------------
@@ -158,12 +166,24 @@ void OneDimensionalPong::checkButtons() {
   int b2 = digitalRead(BUTTON_2_PIN);
 
   if (player1_.ballIsInBase(ball_) && !lastB1) {
-    if (b1 && ball_.isMovingToLeft())
+    if (b1 && ball_.isMovingToLeft()) {
       ball_.hit(player1_.ballPositionInBase(ball_));
+
+      if(callbacks_.onBallHit) {
+        const char* pDirection = ball_.getDirection() == Direction::Right ? "right" : "left";
+        callbacks_.onBallHit(ball_.getPos(), pDirection, ball_.getSpeed());
+      }
+    }
   }
   else if (player2_.ballIsInBase(ball_) && !lastB2) {
-    if (b2 && ball_.isMovingToRight())
-      ball_.hit(player2_.ballPositionInBase(ball_));    
+    if (b2 && ball_.isMovingToRight()) {
+      ball_.hit(player2_.ballPositionInBase(ball_));
+
+      if(callbacks_.onBallHit) {
+        const char* pDirection = ball_.getDirection() == Direction::Right ? "right" : "left";        
+        callbacks_.onBallHit(ball_.getPos(), pDirection, ball_.getSpeed());
+      }
+    }
   }
 
   lastB1 = b1;

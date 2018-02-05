@@ -28,6 +28,8 @@ public:
   int getPos() const;
   bool isMovingToRight() const;
   bool isMovingToLeft() const;
+  int getSpeed() const;
+  Direction getDirection() const;
 
 private:
   int pos_{NUM_LEDS / 2};
@@ -106,11 +108,6 @@ public:
   void render();
 
 private:
-  enum class Direction {
-    Up,
-    Down
-  };
-
   static void onBallHitBounds(void* pInstance, int pos);
   
   static const int ledCount_{NUM_LEDS};

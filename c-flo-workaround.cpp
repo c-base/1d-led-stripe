@@ -39,7 +39,15 @@ void Cflow::sendGameStartMsg() {
 }
 
 void Cflow::sendBallHitMsg(int pos, String direction, int speed) {
-  
+  StaticJsonBuffer<1024> rootBuffer;
+  JsonObject& root = rootBuffer.createObject();
+  root["position"]  = pos;
+  root["direction"] = direction.c_str();
+  root["speed"] = speed;
+
+  char pMqtt[512];
+  root.printTo(pMqtt); 
+  mqttClient_.publish("c-base/espong/OnBallHit", pMqtt, root.measureLength());  
 }
 
 void Cflow::sendPlayerVictoryMsg(int playerId) {
@@ -71,6 +79,12 @@ void Cflow::sendDiscoveryMsg() {
   outport2["type"]        = "any";
   outport2["description"] = "Is send when a new game starts";
   outport2["id"]          = "OnGameStart";
+
+  JsonObject& outport3   = outports.createNestedObject();
+  outport3["queue"]       = "mainhall/espong";
+  outport3["type"]        = "any";
+  outport3["description"] = "Is send when the ball is hit";
+  outport3["id"]          = "OnBallHit";
   
   payload["role"] = role_;
   payload["id"]   = role_;
