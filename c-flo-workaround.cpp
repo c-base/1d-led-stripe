@@ -15,11 +15,12 @@ void Cflow::init() {
 }
 
 void Cflow::tick() {   
-  static int lastTickTime = millis();
+  static int lastTickTime = 0;
 
-  // Send discovery message for every 30 seconds:
+  // Send discovery message for every 5 seconds:
+  // CHECKME: waiting for longer does not work !?
   
-  if(millis() - lastTickTime > 30 * 1000) {    
+  if((lastTickTime == 0) || (millis() - lastTickTime > 5000)) {
     lastTickTime = millis();
     sendDiscoveryMsg();
   }
@@ -45,6 +46,7 @@ void Cflow::sendDiscoveryMsg() {
 
   JsonArray& inports    = payload.createNestedArray("inports");
   JsonArray& outports   = payload.createNestedArray("outports");
+
   JsonObject& outport   = outports.createNestedObject();  
   outport["queue"]       = "mainhall/espong";
   outport["type"]        = "boolean";
