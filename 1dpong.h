@@ -80,9 +80,24 @@ private:
 // OneDimensionalPong
 //-----------------------------------------------------
 
+// -
+typedef void (*OnBallHitBoundCallback)(void* pInstnace, int pos);
+// -
+
+typedef void (*OnGameStartCallback)();  
+typedef void (*OnBallHitCallback)(int pos, String direction, int speed);
+typedef void (*OnPlayerVictoryCallback)(int playerId);
+
+struct PongCallbacks {
+  OnGameStartCallback onGameStart;
+  OnBallHitCallback onBallHit;
+  OnPlayerVictoryCallback onPlayerVictory;
+};
+
 class OneDimensionalPong {
 public:
   OneDimensionalPong();
+  void setCallbacks(const PongCallbacks& callbacks);
   void init();  
   void checkButtons();
   void turnOffAllLeds();  
@@ -90,7 +105,7 @@ public:
   void tick();
   void render();
 
-private:  
+private:
   enum class Direction {
     Up,
     Down
@@ -106,6 +121,7 @@ private:
   Player player1_;
   Player player2_;
   Ball ball_;
+  PongCallbacks callbacks_{0};
 };
 
 #endif // !__1DPONG_H

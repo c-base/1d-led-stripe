@@ -33,6 +33,19 @@ void Cflow::sendOnlineMsg() {
   mqttClient_.publish("c-base/espong/online", reinterpret_cast<const uint8_t*>(pPayload), payloadLen, true);
 }
 
+void Cflow::sendGameStartMsg() {
+  uint8_t* p = nullptr;
+  mqttClient_.publish("c-base/espong/OnGameStart", p, 0);
+}
+
+void Cflow::sendBallHitMsg(int pos, String direction, int speed) {
+  
+}
+
+void Cflow::sendPlayerVictoryMsg(int playerId) {
+  
+}
+
 void Cflow::sendDiscoveryMsg() {  
   StaticJsonBuffer<1024> rootBuffer;
   JsonObject& root = rootBuffer.createObject();
@@ -52,6 +65,12 @@ void Cflow::sendDiscoveryMsg() {
   outport["type"]        = "boolean";
   outport["description"] = "Shows if the node mcu is up and running";
   outport["id"]          = "online";
+
+  JsonObject& outport2   = outports.createNestedObject();  
+  outport2["queue"]       = "mainhall/espong";
+  outport2["type"]        = "any";
+  outport2["description"] = "Is send when a new game starts";
+  outport2["id"]          = "OnGameStart";
   
   payload["role"] = role_;
   payload["id"]   = role_;

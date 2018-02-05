@@ -142,6 +142,13 @@ void OneDimensionalPong::init() {
 
   pixels_.begin();
   turnOffAllLeds();
+
+  if(callbacks_.onGameStart)
+    callbacks_.onGameStart();
+}
+
+void OneDimensionalPong::setCallbacks(const PongCallbacks& callbacks) {
+  callbacks_ = callbacks;
 }
 
 void OneDimensionalPong::checkButtons() {
@@ -198,9 +205,19 @@ void OneDimensionalPong::tick() {
 
   if(player1_.isDead()) {
     die();
+
+    if(player1_.lifes() == player1_.numBaseLeds() && player2_.lifes() == player2_.numBaseLeds()) {
+      if(callbacks_.onGameStart)
+        callbacks_.onGameStart();    
+    }
   }
   else if(player2_.isDead()) {
     die();
+
+    if(player1_.lifes() == player1_.numBaseLeds() && player2_.lifes() == player2_.numBaseLeds()) {
+      if(callbacks_.onGameStart)
+        callbacks_.onGameStart();    
+    }
   }
   
   render();  
@@ -244,7 +261,7 @@ void OneDimensionalPong::onBallHitBounds(void* pInstance, int pos) {
 
   if(pThis->player1_.lifes() == 0 || pThis->player2_.lifes() == 0) {
     pThis->player1_.resetLifes();
-    pThis->player2_.resetLifes();
+    pThis->player2_.resetLifes();    
   }
 }
 

@@ -16,6 +16,9 @@ public:
   Cflow(String location, String name, String role);
   void init();
   void tick();
+  void sendGameStartMsg();
+  void sendBallHitMsg(int pos, String direction, int speed);
+  void sendPlayerVictoryMsg(int playerId);
 
 private:
   void sendDiscoveryMsg();
