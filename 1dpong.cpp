@@ -104,10 +104,6 @@ bool Player::ballIsOnLastPixel(const Ball& ball) const {
 }
 
 void Player::kill() {
-  Serial.print("Player '");
-  Serial.print(name_.c_str());
-  Serial.println("' is dying");
-
   numLifes_--;
   isDead_ = true;
 }
@@ -211,10 +207,10 @@ void OneDimensionalPong::die() {
   ball_.setPos(NUM_LEDS / 2);
 
   if(player1_.isDead())
-    player1_.revive();      
+    player1_.revive();
   
   if(player2_.isDead())
-    player2_.revive();   
+    player2_.revive();
 
   ball_.hit(INITIAL_SPEED);
 }
@@ -274,10 +270,22 @@ void OneDimensionalPong::render() {
 void OneDimensionalPong::onBallHitBounds(void* pInstance, int pos) {
   OneDimensionalPong* pThis = static_cast<OneDimensionalPong*>(pInstance);  
 
-  if(pThis->player1_.ballIsInBase(pThis->ball_))
+  if(pThis->player1_.ballIsInBase(pThis->ball_)) {
     pThis->player1_.kill();
-  else if(pThis->player2_.ballIsInBase(pThis->ball_))
+
+    if(pThis->player1_.lifes() == 0) {
+      if(pThis->callbacks_.onPlayerVictory)
+        pThis->callbacks_.onPlayerVictory(2);
+    }
+  }
+  else if(pThis->player2_.ballIsInBase(pThis->ball_)) {
     pThis->player2_.kill();
+
+    if(pThis->player2_.lifes() == 0) {
+      if(pThis->callbacks_.onPlayerVictory)
+        pThis->callbacks_.onPlayerVictory(1);
+    }
+  }
 
   if(pThis->player1_.lifes() == 0 || pThis->player2_.lifes() == 0) {
     pThis->player1_.resetLifes();
