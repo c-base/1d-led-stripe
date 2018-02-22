@@ -25,6 +25,12 @@ void Ball::hit(int speed) {
 void Ball::tick() {
   delay(1000 / (1 + abs(speed_)));
 
+  // CHECKME: does crash!?
+  // static int lastTime = millis();
+  // if(millis() - lastTime < (1000 / (1 + abs(speed_))))
+  // return;
+  // lastTime = millis();
+
   int newPos = pos_ + (direction_ == Direction::Right ? 1 : -1);
 
   if (newPos < leftBound_ || newPos == rightBound_) {
@@ -249,7 +255,7 @@ void OneDimensionalPong::render() {
     if(pos < player1_.lifes())
       pixels_.setPixelColor(pos, pixels_.Color(0, 0, LED_BRIGHTNESS));
     else
-      pixels_.setPixelColor(pos, pixels_.Color(LED_BRIGHTNESS, 0, LED_BRIGHTNESS));
+      pixels_.setPixelColor(pos, pixels_.Color(LED_BRIGHTNESS, 0, 0));
   }
 
   for(int i = 0; i < player2_.numBaseLeds(); i++) {
@@ -258,7 +264,7 @@ void OneDimensionalPong::render() {
     if(pos - player2_.basePos() >= player2_.numBaseLeds() - player2_.lifes())
       pixels_.setPixelColor(pos, pixels_.Color(0, 0, LED_BRIGHTNESS));
     else
-      pixels_.setPixelColor(pos, pixels_.Color(LED_BRIGHTNESS, 0, LED_BRIGHTNESS));
+      pixels_.setPixelColor(pos, pixels_.Color(LED_BRIGHTNESS, 0, 0));
   }
 
   // ball
