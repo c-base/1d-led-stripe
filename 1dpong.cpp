@@ -64,7 +64,7 @@ bool Ball::isMovingToLeft() const {
   return direction_ == Direction::Left;
 }
 
-Direction Ball::getDirection() const {
+Ball::Direction Ball::getDirection() const {
   return direction_;
 }
 
@@ -172,7 +172,7 @@ void OneDimensionalPong::checkButtons() {
       ball_.hit(player1_.ballPositionInBase(ball_));
 
       if(callbacks_.onBallHit) {
-        const char* pDirection = ball_.getDirection() == Direction::Right ? "right" : "left";
+        const char* pDirection = ball_.getDirection() == Ball::Direction::Right ? "right" : "left";
         callbacks_.onBallHit(ball_.getPos(), pDirection, ball_.getSpeed());
       }
     }
@@ -182,7 +182,7 @@ void OneDimensionalPong::checkButtons() {
       ball_.hit(player2_.ballPositionInBase(ball_));
 
       if(callbacks_.onBallHit) {
-        const char* pDirection = ball_.getDirection() == Direction::Right ? "right" : "left";        
+        const char* pDirection = ball_.getDirection() == Ball::Direction::Right ? "right" : "left";
         callbacks_.onBallHit(ball_.getPos(), pDirection, ball_.getSpeed());
       }
     }

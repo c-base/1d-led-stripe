@@ -11,13 +11,13 @@
 
 typedef void (*OnBallHitBoundCallback)(void* pInstnace, int pos);
 
-enum class Direction {
-  Left,
-  Right
-};
-
 class Ball {
 public:
+  enum class Direction {
+    Left,
+    Right
+  };
+
   Ball(int leftBound, int rightBound, 
       void* pCallbackInstance = nullptr, OnBallHitBoundCallback pOnBallHitBoundCallback = nullptr);
 
