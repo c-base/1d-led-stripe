@@ -27,7 +27,7 @@ void setup() {
   // setupOta();
   // _cflo.init();
 
-  PongCallbacks cb{0};
+  OneDimensionalPong::PongCallbacks cb{0};
   cb.onGameStart     = onGameStart;
   cb.onBallHit             = onBallHit;
   cb.onPlayerVictory = onPlayerVictory;

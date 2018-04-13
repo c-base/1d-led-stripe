@@ -36,7 +36,7 @@ private:
   int speed_{250}; // TODO: pixels per second
   int leftBound_{0};
   int rightBound_{0};
-  Direction direction_{Direction::Right};
+  Direction direction_{Ball::Direction::Right};
 
   void* pCallbackInstance_{nullptr};
   OnBallHitBoundCallback pOnBallHitBoundCallback_{nullptr};
@@ -46,13 +46,13 @@ private:
 // Player
 //-----------------------------------------------------
 
-enum class BaseStartingPoint {
-  Left,
-  Right
-};
-
 class Player {
 public:
+  enum class BaseStartingPoint {
+    Left,
+    Right
+  };
+
   Player(int basePos, BaseStartingPoint startingPoint);
 
   void setName(const char* pName);
@@ -82,22 +82,19 @@ private:
 // OneDimensionalPong
 //-----------------------------------------------------
 
-// -
 typedef void (*OnBallHitBoundCallback)(void* pInstnace, int pos);
-// -
-
 typedef void (*OnGameStartCallback)();  
 typedef void (*OnBallHitCallback)(int pos, String direction, int speed);
 typedef void (*OnPlayerVictoryCallback)(int playerId);
 
-struct PongCallbacks {
-  OnGameStartCallback onGameStart;
-  OnBallHitCallback onBallHit;
-  OnPlayerVictoryCallback onPlayerVictory;
-};
-
 class OneDimensionalPong {
 public:
+  struct PongCallbacks {
+    OnGameStartCallback onGameStart;
+    OnBallHitCallback onBallHit;
+    OnPlayerVictoryCallback onPlayerVictory;
+  };
+
   OneDimensionalPong();
   void setCallbacks(const PongCallbacks& callbacks);
   void init();  

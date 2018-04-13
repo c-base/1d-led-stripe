@@ -23,19 +23,20 @@ void Ball::hit(int speed) {
 }
 
 void Ball::tick() {
-  delay(1000 / (1 + abs(speed_)));
+  Serial.println(millis());
 
-  // CHECKME: does crash!?
-  // static int lastTime = millis();
-  // if(millis() - lastTime < (1000 / (1 + abs(speed_))))
-  // return;
-  // lastTime = millis();
+  static int lastTime = millis();
+
+  if(millis() - lastTime < (1000 / (1 + abs(speed_))))
+    return;
+
+  lastTime = millis();
 
   int newPos = pos_ + (direction_ == Direction::Right ? 1 : -1);
 
   if (newPos < leftBound_ || newPos == rightBound_) {
-   if(pOnBallHitBoundCallback_)
-     pOnBallHitBoundCallback_(pCallbackInstance_, pos_); 
+    if(pOnBallHitBoundCallback_)
+      pOnBallHitBoundCallback_(pCallbackInstance_, pos_);
   
     return;
   }
@@ -139,7 +140,7 @@ void Player::resetLifes() {
 //-----------------------------------------------------
 
 OneDimensionalPong::OneDimensionalPong() : pixels_(NUM_LEDS, LED_DATA_PIN, NEO_GRB + NEO_KHZ800),
-    player1_(0, BaseStartingPoint::Left), player2_(NUM_LEDS - RANGE, BaseStartingPoint::Right), 
+    player1_(0, Player::BaseStartingPoint::Left), player2_(NUM_LEDS - RANGE, Player::BaseStartingPoint::Right),
     ball_(player1_.basePos(), player2_.basePos() + player2_.numBaseLeds(), this, onBallHitBounds) {
 
   player1_.setName("Player 1");
